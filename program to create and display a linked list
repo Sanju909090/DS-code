@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definition for singly linked list node
+struct ListNode {
+    int data;
+    struct ListNode *next;
+};
+
+// Function to insert a new node at the beginning of a linked list
+void insertNode(struct ListNode **head, int data) {
+    struct ListNode *newNode = (struct ListNode *)malloc(sizeof(struct ListNode));
+    if (newNode == NULL) {
+        printf("Memory allocation failed.\n");
+        return;
+    }
+    newNode->data = data;
+    newNode->next = *head;
+    *head = newNode;
+}
+
+// Function to display the linked list
+void displayList(struct ListNode *head) {
+    struct ListNode *current = head;
+    while (current != NULL) {
+        printf("%d -> ", current->data);
+        current = current->next;
+    }
+    printf("NULL\n");
+}
+
+// Function to free memory allocated for the linked list
+void freeList(struct ListNode *head) {
+    struct ListNode *temp;
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+int main() {
+    struct ListNode *head = NULL;
+
+    // Insert nodes into the linked list
+    insertNode(&head, 3);
+    insertNode(&head, 5);
+    insertNode(&head, 7);
+    insertNode(&head, 9);
+
+    // Display the linked list
+    printf("Linked List: ");
+    displayList(head);
+
+    // Free memory allocated for the linked list
+    freeList(head);
+
+    return 0;
+}

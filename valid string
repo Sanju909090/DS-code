@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Stack {
+    char* array;
+    int top;
+};
+
+struct Stack* createStack(int size) {
+    struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
+    stack->array = (char*)malloc(size * sizeof(char));
+    stack->top = -1;
+    return stack;
+}
+
+bool isEmpty(struct Stack* stack) {
+    return stack->top == -1;
+}
+
+void push(struct Stack* stack, char item) {
+    stack->array[++stack->top] = item;
+}
+
+char pop(struct Stack* stack) {
+    if (isEmpty(stack))
+        return '\0';
+    return stack->array[stack->top--];
+}
+
+bool isValid(char* s) {
+    int len = strlen(s);
+    struct Stack* stack = createStack(len);
+    
+    for (int i = 0; i < len; i++) {
+        if (s[i] == '(' || s[i] == '{' || s[i] == '[') {
+            push(stack, s[i]);
+        } else {
+            if (isEmpty(stack))
+                return false;
+            char top = pop(stack);
+            if ((s[i] == ')' && top != '(') ||
+                (s[i] == '}' && top != '{') ||
+                (s[i] == ']' && top != '[')) {
+                return false;
+            }
+        }
+    }
+    
+    return isEmpty(stack);
+}
+
+int main() {
+    char str1[] = "{[()]}";
+    char str2[] = "{[(])}";
+    char str3[] = "()[]{}";
+    
+    printf("%s is %s.\n", str1, isValid(str1) ? "valid" : "not valid");
+    printf("%s is %s.\n", str2, isValid(str2) ? "valid" : "not valid");
+    printf("%s is %s.\n", str3, isValid(str3) ? "valid" : "not valid");
+    
+    return 0;
+}

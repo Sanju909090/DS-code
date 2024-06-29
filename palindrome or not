@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+struct ListNode {
+    int val;
+    struct ListNode* next;
+};
+
+struct ListNode* reverseList(struct ListNode* head) {
+    struct ListNode* prev = NULL;
+    while (head) {
+        struct ListNode* next = head->next;
+        head->next = prev;
+        prev = head;
+        head = next;
+    }
+    return prev;
+}
+
+bool isPalindrome(struct ListNode* head) {
+    if (!head || !head->next) return true;
+
+    struct ListNode* slow = head;
+    struct ListNode* fast = head;
+
+    while (fast && fast->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    slow = reverseList(slow);
+    struct ListNode* firstHalf = head;
+
+    while (slow) {
+        if (firstHalf->val != slow->val) return false;
+        firstHalf = firstHalf->next;
+        slow = slow->next;
+    }
+
+    return true;
+}
+
+struct ListNode* newNode(int val) {
+    struct ListNode* node = malloc(sizeof(struct ListNode));
+    node->val = val;
+    node->next = NULL;
+    return node;
+}
+
+int main() {
+    struct ListNode* head = newNode(1);
+    head->next = newNode(2);
+    head->next->next = newNode(2);
+    head->next->next->next = newNode(1);
+
+    if (isPalindrome(head))
+        printf("The linked list is a palindrome.\n");
+    else
+        printf("The linked list is not a palindrome.\n");
+
+    return 0;
+}

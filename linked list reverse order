@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definition for singly-linked list node
+struct ListNode {
+    int val;
+    struct ListNode *next;
+};
+
+// Function to insert a new node at the beginning of a linked list
+void insertNode(struct ListNode **head, int val) {
+    struct ListNode *newNode = (struct ListNode *)malloc(sizeof(struct ListNode));
+    newNode->val = val;
+    newNode->next = *head;
+    *head = newNode;
+}
+
+// Function to print the linked list in reverse order using recursion
+void printReverse(struct ListNode *head) {
+    if (head == NULL) {
+        return;
+    }
+    printReverse(head->next);
+    printf("%d", head->val);
+}
+
+// Function to free memory allocated for the linked list
+void freeList(struct ListNode *head) {
+    struct ListNode *temp;
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+int main() {
+    // Example: Create a linked list with digits 1 -> 2 -> 3
+    struct ListNode *head = NULL;
+    insertNode(&head, 3);
+    insertNode(&head, 2);
+    insertNode(&head, 1);
+
+    printf("Original linked list: ");
+    struct ListNode *current = head;
+    while (current != NULL) {
+        printf("%d", current->val);
+        current = current->next;
+    }
+    printf("\n");
+
+    printf("Linked list in reverse order: ");
+    printReverse(head);
+    printf("\n");
+
+    // Free memory allocated for the linked list
+    freeList(head);
+
+    return 0;
+}

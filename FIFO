@@ -1,0 +1,128 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+// Stack structure
+struct Stack {
+    int* array;
+    int top;
+    int capacity;
+};
+
+// Function to create a stack with given capacity
+struct Stack* createStack(int capacity) {
+    struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
+    stack->capacity = capacity;
+    stack->top = -1;
+    stack->array = (int*)malloc(stack->capacity * sizeof(int));
+    return stack;
+}
+
+// Function to check if the stack is full
+bool isFull(struct Stack* stack) {
+    return stack->top == stack->capacity - 1;
+}
+
+// Function to check if the stack is empty
+bool isEmpty(struct Stack* stack) {
+    return stack->top == -1;
+}
+
+// Function to push an element onto the stack
+void push(struct Stack* stack, int item) {
+    if (isFull(stack)) {
+        printf("Stack overflow\n");
+        return;
+    }
+    stack->array[++stack->top] = item;
+}
+
+// Function to pop an element from the stack
+int pop(struct Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Stack underflow\n");
+        return -1;
+    }
+    return stack->array[stack->top--];
+}
+
+// Function to return the top element of the stack
+int peek(struct Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Stack is empty\n");
+        return -1;
+    }
+    return stack->array[stack->top];
+}
+
+// MyQueue class implementing FIFO queue using two stacks
+struct MyQueue {
+    struct Stack* stack1; // Main stack for enqueue
+    struct Stack* stack2; // Auxiliary stack for dequeue
+};
+
+// Initialize the MyQueue
+struct MyQueue* myQueueCreate() {
+    struct MyQueue* queue = (struct MyQueue*)malloc(sizeof(struct MyQueue));
+    queue->stack1 = createStack(100); // Assuming capacity
+    queue->stack2 = createStack(100); // Assuming capacity
+    return queue;
+}
+
+// Push element x to the back of the queue
+void myQueuePush(struct MyQueue* obj, int x) {
+    push(obj->stack1, x);
+}
+
+// Removes the element from the front of the queue and returns it
+int myQueuePop(struct MyQueue* obj) {
+    if (isEmpty(obj->stack2)) {
+        while (!isEmpty(obj->stack1)) {
+            push(obj->stack2, pop(obj->stack1));
+        }
+    }
+    return pop(obj->stack2);
+}
+
+// Get the front element
+int myQueuePeek(struct MyQueue* obj) {
+    if (isEmpty(obj->stack2)) {
+        while (!isEmpty(obj->stack1)) {
+            push(obj->stack2, pop(obj->stack1));
+        }
+    }
+    return peek(obj->stack2);
+}
+
+// Returns whether the queue is empty
+bool myQueueEmpty(struct MyQueue* obj) {
+    return isEmpty(obj->stack1) && isEmpty(obj->stack2);
+}
+
+// Free memory allocated for MyQueue
+void myQueueFree(struct MyQueue* obj) {
+    free(obj->stack1->array);
+    free(obj->stack1);
+    free(obj->stack2->array);
+    free(obj->stack2);
+    free(obj);
+}
+
+int main() {
+    struct MyQueue* obj = myQueueCreate();
+    myQueuePush(obj, 1);
+    myQueuePush(obj, 2);
+    myQueuePush(obj, 3);
+
+    printf("Front element: %d\n", myQueuePeek(obj)); // Output: 1
+
+    printf("Popped element: %d\n", myQueuePop(obj)); // Output: 1
+
+    printf("Front element: %d\n", myQueuePeek(obj)); // Output: 2
+
+    printf("Is queue empty? %s\n", myQueueEmpty(obj) ? "Yes" : "No"); // Output: No
+
+    myQueueFree(obj);
+
+    return 0;
+}

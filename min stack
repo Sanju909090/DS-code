@@ -1,0 +1,118 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+// Stack structure
+struct StackNode {
+    int val;
+    struct StackNode* next;
+};
+
+// MinStack structure
+typedef struct {
+    struct StackNode* stack; // Main stack for elements
+    struct StackNode* minStack; // Auxiliary stack for minimums
+} MinStack;
+
+// Function to create a new stack node
+struct StackNode* newNode(int val) {
+    struct StackNode* node = (struct StackNode*)malloc(sizeof(struct StackNode));
+    node->val = val;
+    node->next = NULL;
+    return node;
+}
+
+// Function to initialize the MinStack
+MinStack* minStackCreate() {
+    MinStack* obj = (MinStack*)malloc(sizeof(MinStack));
+    obj->stack = NULL;
+    obj->minStack = NULL;
+    return obj;
+}
+
+// Function to push an element onto the stack
+void minStackPush(MinStack* obj, int val) {
+    // Push onto main stack
+    struct StackNode* newNode = (struct StackNode*)malloc(sizeof(struct StackNode));
+    newNode->val = val;
+    newNode->next = obj->stack;
+    obj->stack = newNode;
+    
+    // Push onto minStack if it's empty or val is smaller than current min
+    if (obj->minStack == NULL || val <= minStackGetMin(obj)) {
+        struct StackNode* minNode = (struct StackNode*)malloc(sizeof(struct StackNode));
+        minNode->val = val;
+        minNode->next = obj->minStack;
+        obj->minStack = minNode;
+    }
+}
+
+// Function to pop an element from the stack
+void minStackPop(MinStack* obj) {
+    if (obj->stack == NULL)
+        return;
+    
+    // Pop from main stack
+    struct StackNode* temp = obj->stack;
+    obj->stack = obj->stack->next;
+    free(temp);
+    
+    // Pop from minStack if the popped element was the minimum
+    if (temp->val == minStackGetMin(obj)) {
+        struct StackNode* minTemp = obj->minStack;
+        obj->minStack = obj->minStack->next;
+        free(minTemp);
+    }
+}
+
+// Function to get the top element of the stack
+int minStackTop(MinStack* obj) {
+    if (obj->stack == NULL)
+        return -1; // Stack is empty
+    
+    return obj->stack->val;
+}
+
+// Function to retrieve the minimum element in the stack
+int minStackGetMin(MinStack* obj) {
+    if (obj->minStack == NULL)
+        return -1; // Min stack is empty
+    
+    return obj->minStack->val;
+}
+
+// Function to free memory allocated for MinStack
+void minStackFree(MinStack* obj) {
+    while (obj->stack != NULL) {
+        struct StackNode* temp = obj->stack;
+        obj->stack = obj->stack->next;
+        free(temp);
+    }
+    while (obj->minStack != NULL) {
+        struct StackNode* temp = obj->minStack;
+        obj->minStack = obj->minStack->next;
+        free(temp);
+    }
+    free(obj);
+}
+
+int main() {
+    MinStack* obj = minStackCreate();
+    
+    minStackPush(obj, -2);
+    minStackPush(obj, 0);
+    minStackPush(obj, -3);
+    
+    printf("Top element: %d\n", minStackTop(obj)); // Output: -3
+    printf("Minimum element: %d\n", minStackGetMin(obj)); // Output: -3
+    
+    minStackPop(obj);
+    
+    printf("After popping:\n");
+    printf("Top element: %d\n", minStackTop(obj)); // Output: 0
+    printf("Minimum element: %d\n", minStackGetMin(obj)); // Output: -2
+    
+    minStackFree(obj);
+    
+    return 0;
+}

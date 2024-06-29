@@ -1,0 +1,21 @@
+#include <stdio.h>
+
+void frequency(char *s) {
+    int count[256] = {0}; // assuming ASCII characters
+
+    for (int i = 0; s[i] != '\0'; i++) {
+        count[(int)s[i]]++;
+    }
+
+    for (int i = 0; i < 256; i++) {
+        if (count[i] > 0) {
+            printf("Frequency of '%c' is %d\n", (char)i, count[i]);
+        }
+    }
+}
+
+int main() {
+    char s[] = "hello world";
+    frequency(s);
+    return 0;
+}
